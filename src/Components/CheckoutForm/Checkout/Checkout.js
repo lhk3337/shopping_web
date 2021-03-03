@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Paper,
   Stepper,
@@ -9,17 +9,50 @@ import {
   Divider,
   Button,
 } from "@material-ui/core";
+
+import { commerce } from "../../../lib/commerce";
 import useStyle from "./Styles";
 import AddressForm from "../AddressForm";
 import PaymentForm from "../PaymentForm";
+
 const steps = ["Shipping address", "Payment details"];
 
-const Checkout = () => {
-  const [activeStep, setActiveStep] = useState(2);
+const Checkout = ({ cart }) => {
+  const [activeStep, setActiveStep] = useState(0);
+  const [checkoutToken, setCheckoutToken] = useState(null);
+  const [shippingData, setShippingData] = useState({});
   const classes = useStyle();
+
+  useEffect(() => {
+    const generateToken = async () => {
+      try {
+        const token = await commerce.checkout.generateToken(cart.id, {
+          type: "cart",
+        });
+
+        setCheckoutToken(token);
+      } catch (error) {}
+    };
+    generateToken();
+  }, [cart]);
+
+  const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
+
+  const next = (data) => {
+    setShippingData(data);
+    nextStep();
+  };
+
   const Confirmation = () => <div>Confirmation</div>;
 
-  const Form = () => (activeStep === 0 ? <AddressForm /> : <PaymentForm />);
+  const Form = () =>
+    activeStep === 0 ? (
+      <AddressForm checkoutToken={checkoutToken} next={next} />
+    ) : (
+      <PaymentForm shippingData={shippingData} />
+    );
+
   return (
     <>
       <div className={classes.toolbar} />
@@ -35,7 +68,11 @@ const Checkout = () => {
               </Step>
             ))}
           </Stepper>
-          {activeStep === steps.length ? <Confirmation /> : <Form />}
+          {activeStep === steps.length ? (
+            <Confirmation />
+          ) : (
+            checkoutToken && <Form />
+          )}
         </Paper>
       </main>
     </>
