@@ -13,6 +13,7 @@ const CartItem = ({ item, onUpadateCartQty, onRemoveFromCart }) => {
   return (
     <Card>
       <CardMedia
+        component="img"
         image={item.media.source}
         alt={item.name}
         className={classes.media}
