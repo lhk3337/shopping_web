@@ -6,7 +6,6 @@ import {
   Button,
   Grid,
   Typography,
-  Input,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
@@ -100,7 +99,12 @@ const AddressForm = ({ checkoutToken, next }) => {
       <FormProvider {...methods}>
         <form
           onSubmit={methods.handleSubmit((data) =>
-            next(...data, shippingCountry, shippingSubdivision, shippingOption)
+            next({
+              ...data,
+              shippingCountry,
+              shippingSubdivision,
+              shippingOption,
+            })
           )}
         >
           <Grid container spacing={3}>
