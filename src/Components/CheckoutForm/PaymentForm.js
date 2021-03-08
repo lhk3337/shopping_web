@@ -44,7 +44,7 @@ const PaymentForm = ({
           postal_zip_code: shippingData.zip,
           country: shippingData.shippingCountry,
         },
-        fullfillment: { shipping_method: shippingData.shippingOption },
+        fulfillment: { shipping_method: shippingData.shippingOption },
         payment: {
           gateway: "stripe",
           stripe: {
