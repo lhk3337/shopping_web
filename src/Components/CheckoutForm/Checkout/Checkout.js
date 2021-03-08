@@ -9,7 +9,7 @@ import {
   Divider,
   Button,
 } from "@material-ui/core";
-
+import { Link } from "react-router-dom";
 import { commerce } from "../../../lib/commerce";
 import useStyle from "./Styles";
 import AddressForm from "../AddressForm";
@@ -31,7 +31,9 @@ const Checkout = ({ cart, order, onCaptureCheckout, error }) => {
         });
 
         setCheckoutToken(token);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     };
     generateToken();
   }, [cart]);
@@ -44,7 +46,40 @@ const Checkout = ({ cart, order, onCaptureCheckout, error }) => {
     nextStep();
   };
 
-  const Confirmation = () => <div>Confirmation</div>;
+  let Confirmation = () =>
+    order.customer ? (
+      <>
+        <div>
+          <Typography variant="h5">
+            Thank you for your Purchase, {order.customer.firstname}{" "}
+            {order.customer.lastname}
+          </Typography>
+          <Divider className={classes.divider} />
+          <Typography variant="subtitle2">
+            Order ref: {order.customer_reference}
+          </Typography>
+        </div>
+        <br />
+        <Button component={Link} to="/" variant="outlined" type="button">
+          Back to Home
+        </Button>
+      </>
+    ) : (
+      <div className={classes.spinner}>
+        <CircularProgress />
+      </div>
+    );
+
+  if (error) {
+    <>
+      <Typography variant="h5">Error: {error}</Typography>
+      <br />
+      <Button component={Link} to="/" variant="outlined" type="button">
+        {" "}
+        Back to Home
+      </Button>
+    </>;
+  }
 
   const Form = () =>
     activeStep === 0 ? (
